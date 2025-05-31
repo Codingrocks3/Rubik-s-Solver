@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rubik's Cube</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            height: 100vh;
+            background-color: #333;
+            color: white;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .cube {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            grid-template-rows: repeat(12, 40px);
+            gap: 4px;
+            margin: 0 auto;
+        }
+        .square {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            background-color: white;
+            padding: 0;
+            margin: 0;
+            color: black;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .empty {
+            visibility: hidden;
+        }
+        .face {
+            display: grid;
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(3, 40px);
+            border: 2px solid black;
+            box-sizing: content-box;
+        }
+        .row {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .controls fieldset {
+            border: 2px solid black;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+        }
+        .controls fieldset legend {
+            color: black;
+        }
+        .controls button {
+            font-size: 1em;
+            padding: 6px;
+            margin-right: 4px;
+            border-radius: 6px;
+        }
+        .controls > button,
+        .algorithm-input button {
+            background-color: #add8e6; /* light blue */
+        }
+        .algorithm-input {
+            display: flex;
+            gap: 8px;
+        }
+
+        .algorithm-input input {
+            flex: 1;
+            padding: 8px;
+            font-size: 1.1em;
+            width: 240px;
+        }
+
+        .algorithm-input button {
+            padding: 8px 16px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rubik's Cube</h1>
+        <p id="edit-instructions" style="display: none;">Click on a square to cycle through colors. Center squares cannot be changed.</p>
+        <div class="row">
+            <div class="cube" id="cube"></div>
+            <div class="controls">
+                <button id="toggle-edit">Edit Cube</button>
+                <fieldset style="background-color: green;">
+                    <button>U</button>
+                    <button>U'</button>
+                    <button>U2</button>
+                </fieldset>
+                <fieldset style="background-color: yellow;">
+                    <button>B</button>
+                    <button>B'</button>
+                    <button>B2</button>
+                </fieldset>
+                <fieldset style="background-color: white;">
+                    <button>F</button>
+                    <button>F'</button>
+                    <button>F2</button>
+                </fieldset>
+                <fieldset style="background-color: blue;">
+                    <button>D</button>
+                    <button>D'</button>
+                    <button>D2</button>
+                </fieldset>
+                <fieldset style="background-color: red;">
+                    <button>L</button>
+                    <button>L'</button>
+                    <button>L2</button>
+                </fieldset>
+                <fieldset style="background-color: orange;">
+                    <button>R</button>
+                    <button>R'</button>
+                    <button>R2</button>
+                </fieldset>
+                <button>Scramble</button>
+                <button>Solve</button>
+                <div class="algorithm-input">
+                    <input type="text" id="algorithm-box" placeholder="Algorithm..." />
+                    <button id="submit-algo">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let editing = false;
+        const editButton = document.getElementById("toggle-edit");
+        const instructions = document.getElementById("edit-instructions");
+        editButton.onclick = () => {
+            editing = !editing;
+            editButton.textContent = editing ? "Done Editing" : "Edit Cube";
+            instructions.style.display = editing ? "block" : "none";
+        };
+
+        const COLORS = ["white", "green", "red", "blue", "orange", "yellow"];
+        const COLOR_MAP = {
+            "W": "white",
+            "G": "green",
+            "R": "red",
+            "O": "orange",
+            "B": "blue",
+            "Y": "yellow"
+        };
+        function cycleColor(button) {
+            if (!editing) return;
+            const current = button.dataset.colorIndex || "0";
+            const next = (parseInt(current) + 1) % COLORS.length;
+            button.style.backgroundColor = COLORS[next];
+            button.dataset.colorIndex = next;
+        }
+
+        const faceMap = {
+            U: [0, 1, 2],
+            L: [3, 4, 5],
+            F: [3, 4, 5],
+            R: [3, 4, 5],
+            D: [9, 10, 11],
+            B: [6, 7, 8],
+        };
+
+        const facePositions = {
+            U: {row: 0, col: 3},
+            L: {row: 3, col: 0},
+            F: {row: 3, col: 3},
+            R: {row: 3, col: 6},
+            B: {row: 6, col: 3},
+            D: {row: 9, col: 3},
+        };
+
+        const cube = document.getElementById("cube");
+        const faceOrder = ["U", "L", "F", "R", "B", "D"];
+
+        const faceColors = {
+            U: "green",
+            L: "red",
+            F: "white",
+            R: "orange",
+            B: "blue",
+            D: "yellow"
+        };
+
+        // Face label mapping
+        const faceLabels = {
+            U: "U",
+            L: "L",
+            F: "F",
+            R: "R",
+            B: "D",
+            D: "B"
+        };
+
+        for (let f = 0; f < faceOrder.length; f++) {
+            const faceKey = faceOrder[f];
+            const face = document.createElement("div");
+            face.className = "face";
+
+            for (let i = 0; i < 9; i++) {
+                const btn = document.createElement("button");
+                btn.className = "square";
+                const color = faceColors[faceKey];
+                const colorIndex = COLORS.indexOf(color);
+                btn.style.backgroundColor = color;
+                btn.dataset.colorIndex = colorIndex;
+                if (i === 4) {
+                    btn.textContent = faceLabels[faceKey];
+                    btn.disabled = true;
+                } else {
+                    btn.onclick = () => cycleColor(btn);
+                }
+                face.appendChild(btn);
+            }
+
+            const pos = facePositions[faceKey];
+            face.style.gridRowStart = pos.row + 1;
+            face.style.gridColumnStart = pos.col + 1;
+            face.style.gridRowEnd = pos.row + 4;
+            face.style.gridColumnEnd = pos.col + 4;
+            face.style.position = "absolute";
+            cube.appendChild(face);
+        }
+
+        cube.style.position = "relative";
+
+        // Update the cube state on the frontend
+        function updateCube(cubeState) {
+            const squares = document.querySelectorAll(".cube .square");
+            let idx = 0;
+            for (const face of cubeState) {
+                for (let i = 0; i < 9; i++) {
+                    if (i === 4) {
+                        idx++;
+                        continue; // Skip center squares (unchanged and labeled)
+                    }
+                    squares[idx].style.backgroundColor = COLOR_MAP[face[i]];
+                    squares[idx].dataset.colorIndex = COLORS.indexOf(squares[idx].style.backgroundColor);
+                    idx++;
+                }
+            }
+        }
+
+        // Send move to backend via AJAX
+        document.querySelectorAll(".controls fieldset button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                fetch(`/_turn?move=${encodeURIComponent(btn.textContent)}`)
+                  .then(response => response.json())
+                  .then(data => updateCube(data.cube));
+            });
+        });
+
+        // Submit algorithm from input box
+        document.getElementById("submit-algo").addEventListener("click", () => {
+            const algo = document.getElementById("algorithm-box").value;
+            fetch(`/_turn?algorithm=${encodeURIComponent(algo)}`)
+              .then(response => response.json())
+              .then(data => updateCube(data.cube));
+        });
+    </script>
+</body>
+</html>
