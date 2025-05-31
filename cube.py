@@ -478,4 +478,4 @@ class Cube:
                 case _:
                     raise ValueError(f"Unknown rotation: {rotation}")
                 
-            self.solved = self.solved == SOLVED_CUBE_LIST
+            self.solved = self.cube_state == SOLVED_CUBE_LIST
