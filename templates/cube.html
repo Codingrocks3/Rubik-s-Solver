@@ -100,11 +100,9 @@
 <body>
     <div class="container">
         <h1>Rubik's Cube</h1>
-        <p id="edit-instructions" style="display: none;">Click on a square to cycle through colors. Center squares cannot be changed.</p>
         <div class="row">
             <div class="cube" id="cube"></div>
             <div class="controls">
-                <button id="toggle-edit">Edit Cube</button>
                 <fieldset style="background-color: green;">
                     <button>U</button>
                     <button>U'</button>
@@ -135,6 +133,8 @@
                     <button>R'</button>
                     <button>R2</button>
                 </fieldset>
+                <button id="toggle-scramble-display">Show Scramble</button>
+                <p id="scramble-display" style="max-width: 200px; word-wrap: break-word; display: none;"></p>
                 <button id="scramble-btn">Scramble</button>
                 <button id="solve-btn">Solve</button>
                 <div class="algorithm-input">
@@ -145,153 +145,150 @@
         </div>
     </div>
 
-    <script>
-        let editing = false;
-        const editButton = document.getElementById("toggle-edit");
-        const instructions = document.getElementById("edit-instructions");
-        editButton.onclick = () => {
-            editing = !editing;
-            editButton.textContent = editing ? "Done Editing" : "Edit Cube";
-            instructions.style.display = editing ? "block" : "none";
-        };
 
-        const COLORS = ["white", "green", "red", "blue", "orange", "yellow"];
-        const COLOR_MAP = {
-            "W": "white",
-            "G": "green",
-            "R": "red",
-            "O": "orange",
-            "B": "blue",
-            "Y": "yellow"
-        };
-        function cycleColor(button) {
-            if (!editing) return;
-            const current = button.dataset.colorIndex || "0";
-            const next = (parseInt(current) + 1) % COLORS.length;
-            button.style.backgroundColor = COLORS[next];
-            button.dataset.colorIndex = next;
+</body>
+<script>
+    const COLORS = ["white", "green", "red", "blue", "orange", "yellow"];
+    const COLOR_MAP = {
+        "W": "white",
+        "G": "green",
+        "R": "red",
+        "O": "orange",
+        "B": "blue",
+        "Y": "yellow"
+    };
+
+    const faceMap = {
+        U: [0, 1, 2],
+        L: [3, 4, 5],
+        F: [3, 4, 5],
+        R: [3, 4, 5],
+        D: [9, 10, 11],
+        B: [6, 7, 8],
+    };
+
+    const facePositions = {
+        U: {row: 0, col: 3},
+        L: {row: 3, col: 0},
+        F: {row: 3, col: 3},
+        R: {row: 3, col: 6},
+        B: {row: 6, col: 3},
+        D: {row: 9, col: 3},
+    };
+
+    const cube = document.getElementById("cube");
+    const faceOrder = ["U", "L", "F", "R", "B", "D"];
+
+    const faceColors = {
+        U: "green",
+        L: "red",
+        F: "white",
+        R: "orange",
+        B: "blue",
+        D: "yellow"
+    };
+
+    // Face label mapping
+    const faceLabels = {
+        U: "U",
+        L: "L",
+        F: "F",
+        R: "R",
+        B: "D",
+        D: "B"
+    };
+
+    for (let f = 0; f < faceOrder.length; f++) {
+        const faceKey = faceOrder[f];
+        const face = document.createElement("div");
+        face.className = "face";
+
+        for (let i = 0; i < 9; i++) {
+            const btn = document.createElement("button");
+            btn.className = "square";
+            const color = faceColors[faceKey];
+            btn.style.backgroundColor = color;
+            if (i === 4) {
+                btn.textContent = faceLabels[faceKey];
+            }
+            btn.disabled = true;
+            face.appendChild(btn);
         }
 
-        const faceMap = {
-            U: [0, 1, 2],
-            L: [3, 4, 5],
-            F: [3, 4, 5],
-            R: [3, 4, 5],
-            D: [9, 10, 11],
-            B: [6, 7, 8],
-        };
+        const pos = facePositions[faceKey];
+        face.style.gridRowStart = pos.row + 1;
+        face.style.gridColumnStart = pos.col + 1;
+        face.style.gridRowEnd = pos.row + 4;
+        face.style.gridColumnEnd = pos.col + 4;
+        face.style.position = "absolute";
+        cube.appendChild(face);
+    }
 
-        const facePositions = {
-            U: {row: 0, col: 3},
-            L: {row: 3, col: 0},
-            F: {row: 3, col: 3},
-            R: {row: 3, col: 6},
-            B: {row: 6, col: 3},
-            D: {row: 9, col: 3},
-        };
+    cube.style.position = "relative";
 
-        const cube = document.getElementById("cube");
-        const faceOrder = ["U", "L", "F", "R", "B", "D"];
-
-        const faceColors = {
-            U: "green",
-            L: "red",
-            F: "white",
-            R: "orange",
-            B: "blue",
-            D: "yellow"
-        };
-
-        // Face label mapping
-        const faceLabels = {
-            U: "U",
-            L: "L",
-            F: "F",
-            R: "R",
-            B: "D",
-            D: "B"
-        };
-
-        for (let f = 0; f < faceOrder.length; f++) {
-            const faceKey = faceOrder[f];
-            const face = document.createElement("div");
-            face.className = "face";
-
+    // Update the cube state on the frontend
+    function updateCube(cubeState) {
+        console.log("Updating cube with:", cubeState);
+        const squares = document.querySelectorAll(".cube .square");
+        let idx = 0;
+        for (const face of cubeState) {
             for (let i = 0; i < 9; i++) {
-                const btn = document.createElement("button");
-                btn.className = "square";
-                const color = faceColors[faceKey];
-                const colorIndex = COLORS.indexOf(color);
-                btn.style.backgroundColor = color;
-                btn.dataset.colorIndex = colorIndex;
                 if (i === 4) {
-                    btn.textContent = faceLabels[faceKey];
-                    btn.disabled = true;
-                } else {
-                    btn.onclick = () => cycleColor(btn);
-                }
-                face.appendChild(btn);
-            }
-
-            const pos = facePositions[faceKey];
-            face.style.gridRowStart = pos.row + 1;
-            face.style.gridColumnStart = pos.col + 1;
-            face.style.gridRowEnd = pos.row + 4;
-            face.style.gridColumnEnd = pos.col + 4;
-            face.style.position = "absolute";
-            cube.appendChild(face);
-        }
-
-        cube.style.position = "relative";
-
-        // Update the cube state on the frontend
-        function updateCube(cubeState) {
-            console.log("Updating cube with:", cubeState);
-            const squares = document.querySelectorAll(".cube .square");
-            let idx = 0;
-            for (const face of cubeState) {
-                for (let i = 0; i < 9; i++) {
-                    if (i === 4) {
-                        idx++;
-                        continue; // Skip center squares (unchanged and labeled)
-                    }
-                    squares[idx].style.backgroundColor = COLOR_MAP[face[i]];
-                    squares[idx].dataset.colorIndex = COLORS.indexOf(squares[idx].style.backgroundColor);
                     idx++;
+                    continue; // Skip center squares (unchanged and labeled)
                 }
+                squares[idx].style.backgroundColor = COLOR_MAP[face[i]];
+                idx++;
             }
         }
+    }
 
-        // Send move to backend via AJAX
-        document.querySelectorAll(".controls fieldset button").forEach(btn => {
-            btn.addEventListener("click", () => {
-                fetch(`/_turn?move=${encodeURIComponent(btn.textContent)}`)
-                  .then(response => response.json())
-                  .then(data => updateCube(data.cube));
-            });
-        });
-
-        // Submit algorithm from input box
-        document.getElementById("submit-algo").addEventListener("click", () => {
-            const algo = document.getElementById("algorithm-box").value;
-            fetch(`/_turn?algorithm=${encodeURIComponent(algo)}`)
+    // Send move to backend via AJAX
+    document.querySelectorAll(".controls fieldset button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            fetch(`/_turn?move=${encodeURIComponent(btn.textContent)}`)
               .then(response => response.json())
               .then(data => updateCube(data.cube));
         });
+    });
 
-        // Handle scramble and solve buttons
-        document.getElementById("scramble-btn").addEventListener("click", () => {
-            fetch("/_scramble")
-              .then(response => response.json())
-              .then(data => updateCube(data.cube));
-        });
+    // Submit algorithm from input box
+    document.getElementById("submit-algo").addEventListener("click", () => {
+        const algo = document.getElementById("algorithm-box").value;
+        fetch(`/_turn?algorithm=${encodeURIComponent(algo)}`)
+          .then(response => response.json())
+          .then(data => {
+              updateCube(data.cube);
+              document.getElementById("algorithm-box").value = "";
+          });
+    });
 
-        document.getElementById("solve-btn").addEventListener("click", () => {
-            console.log("Solve button clicked");
-            fetch("/_solve")
-              .then(response => response.json())
-              .then(data => updateCube(data.cube));
-        });
-    </script>
+    // Handle scramble and solve buttons
+    document.getElementById("scramble-btn").addEventListener("click", () => {
+        fetch("/_scramble")
+          .then(response => response.json())
+          .then(data => {
+              updateCube(data.cube);
+              document.getElementById("scramble-display").textContent = "Scramble: " + data.scramble;
+          });
+    });
+
+    document.getElementById("solve-btn").addEventListener("click", () => {
+        console.log("Solve button clicked");
+        fetch("/_solve")
+          .then(response => response.json())
+          .then(data => updateCube(data.cube));
+    });
+    // Scramble display toggle logic
+    const scrambleDisplay = document.getElementById("scramble-display");
+    const toggleScrambleBtn = document.getElementById("toggle-scramble-display");
+
+    toggleScrambleBtn.addEventListener("click", () => {
+        const isVisible = scrambleDisplay.style.display !== "none";
+        scrambleDisplay.style.display = isVisible ? "none" : "block";
+        toggleScrambleBtn.textContent = isVisible ? "Show Scramble" : "Hide Scramble";
+    });
+</script>
+</html>
 </body>
 </html>

@@ -57,6 +57,7 @@ class Cube:
     def __init__(self, cube_state=SOLVED_CUBE_LIST):
         self.cube_state = cube_state
         self.solved = self.cube_state == SOLVED_CUBE_LIST
+        self.scramble_algorithm = ""
 
 
     def face_clockwise(self, face: int):
@@ -395,7 +396,7 @@ class Cube:
     ["Y", "Y", "Y",
      "Y", "Y", "Y",
      "Y", "Y", "Y"]   # Yellow face
-]
+    ]
         self.solved = True
 
     def scramble(self):
@@ -405,6 +406,7 @@ class Cube:
             scramble.append(random.choice(POSSIBLE_MOVES))
 
         algo = ' '.join(scramble)
+        self.scramble_algorithm = algo
         self.algorithm(algo)
 
     def algorithm(self, algorithm: str):

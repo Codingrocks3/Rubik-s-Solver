@@ -31,7 +31,10 @@ def solve():
 @app.route("/_scramble")
 def scramble():
     cube.scramble()
-    return flask.jsonify({"cube": cube.cube_state})
+    print("Scrambled with:", cube.scramble_algorithm)
+    return flask.jsonify({"cube": cube.cube_state, "scramble": cube.scramble_algorithm})
+
+
 
 if __name__ == "__main__":
     app.run()
