@@ -85,8 +85,7 @@ class Cube:
                 tmpL = -1
 
         if tmpF == -1:
-            print("Error! Please provide a valid face")
-            exit()
+            raise ValueError(f"Invalid face: {face}")
 
 
         tmpF0 = self.cube_state[tmpF][0]
@@ -156,8 +155,7 @@ class Cube:
                 tmpL = -1
 
         if tmpF == -1:
-            print("Error! Please provide a valid face")
-            exit()
+            raise ValueError(f"Invalid face: {face}")
 
 
         tmpF0 = self.cube_state[tmpF][0]
@@ -185,3 +183,71 @@ class Cube:
             self.cube_state[face][1], self.cube_state[face][4], self.cube_state[face][7],
             self.cube_state[face][0], self.cube_state[face][3], self.cube_state[face][6]
         ]
+
+    def algorithm(self, algorithm: str):
+        algo_list = algorithm.split()
+
+        for rotation in algo_list:
+            match rotation:
+                case "U":
+                    self.clockwise(U)
+                case "U'":
+                    self.counterclockwise(U)
+                case "U2":
+                    self.clockwise(U)
+                    self.clockwise(U)
+                case "L":
+                    self.clockwise(L)
+                case "L'":
+                    self.counterclockwise(L)
+                case "L2":
+                    self.clockwise(L)
+                    self.clockwise(L)
+                case "F":
+                    self.clockwise(F)
+                case "F'":
+                    self.counterclockwise(F)
+                case "F2":
+                    self.clockwise(F)
+                    self.clockwise(F)
+                case "R":
+                    self.clockwise(R)
+                case "R'":
+                    self.counterclockwise(R)
+                case "R2":
+                    self.clockwise(R)
+                    self.clockwise(R)
+                case "D":
+                    self.clockwise(D)
+                case "D'":
+                    self.counterclockwise(D)
+                case "D2":
+                    self.clockwise(D)
+                    self.clockwise(D)
+                case "B":
+                    self.clockwise(B)
+                case "B'":
+                    self.counterclockwise(B)
+                case "B2":
+                    self.clockwise(B)
+                    self.clockwise(B)
+                case "M":
+                    self.clockwise(L)
+                    self.clockwise(L)
+                case "M'":
+                    self.clockwise(R)
+                    self.clockwise(R)
+                case "E":
+                    self.clockwise(D)
+                    self.clockwise(D)
+                case "E'":
+                    self.clockwise(U)
+                    self.clockwise(U)
+                case "S":
+                    self.clockwise(F)
+                    self.clockwise(F)
+                case "S'":
+                    self.clockwise(B)
+                    self.clockwise(B)
+                case _:
+                    raise ValueError(f"Unknown rotation: {rotation}")
