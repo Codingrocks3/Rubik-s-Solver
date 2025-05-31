@@ -1,7 +1,6 @@
 import os
 import random
 from cube import Cube
-from cube import SOLVED_CUBE_LIST as SOLVED_CUBE_LIST
 
 EmptyFace = ["E"] * 9
 faceG = ["E"] * 4 + ["G"] + ["E"] * 4
@@ -20,6 +19,27 @@ green = "\x1b[32m"
 blue = "\x1b[34m"
 white = "\x1b[37m"
 blank = "\x1b[0m"
+
+SOLVED_CUBE_LIST = [
+    ["G", "G", "G",
+     "G", "G", "G",
+     "G", "G", "G"],  # Green face
+    ["R", "R", "R",
+     "R", "R", "R",
+     "R", "R", "R"],  # Red face
+    ["W", "W", "W",
+     "W", "W", "W",
+     "W", "W", "W"],  # White face
+    ["O", "O", "O",
+     "O", "O", "O",
+     "O", "O", "O"],  # Orange face
+    ["B", "B", "B",
+     "B", "B", "B",
+     "B", "B", "B"],  # Blue face
+    ["Y", "Y", "Y",
+     "Y", "Y", "Y",
+     "Y", "Y", "Y"]   # Yellow face
+]
 
 class Solve:
     cube = Cube(emptyCubeState)
@@ -98,7 +118,12 @@ class Solve:
                         cubeState[idx][i] = center_color
                 colors_dict[center_color] = 8
             return cubeState
-
+        if inputColor == "S":
+            self.cube.cube_state = SOLVED_CUBE_LIST
+            self.cube.scramble()
+            for i in colors_dict.keys():
+                colors_dict[i] = 8
+            return self.cube.cube_state
 
         if colors_dict[inputColor] >= 8:
             print("This color has already been used 9 times. Please choose another color.")
@@ -135,19 +160,18 @@ class Solve:
     def getAlgorithmInput(self, cubeState):
         algorithm = input("Enter the algorithm to solve the cube (e.g., R U R' U'): ")
         self.cube.algorithm(algorithm)
-        return self.cube.cube_state
     
     def solveCube(self, cubeState):
-        while cubeState != SOLVED_CUBE_LIST:
+        self.getAlgorithmInput(cubeState)
+        self.printCube(self.cube.cube_state)
+        if cubeState == SOLVED_CUBE_LIST:
+            print("Cube is solved!")
+            return cubeState
+        else:
             self.getAlgorithmInput(cubeState)
             self.printCube(self.cube.cube_state)
-            if cubeState == SOLVED_CUBE_LIST:
-                print("Cube is solved!")
-                return cubeState
-            else:
-                self.getAlgorithmInput(cubeState)
-                self.printCube(self.cube.cube_state)
+            self.solveCube(self.cube.cube_state)
 
 s1 = Solve()
-s1.cube.cube_state = s1.fillOutCube(s1.cube.cube_state)
-s1.cube.cube_state = s1.solveCube(s1.cube.cube_state)
+s1.fillOutCube(s1.cube.cube_state)
+s1.solveCube(s1.cube.cube_state)
