@@ -44,145 +44,320 @@ class Cube:
         self.solved = self.cube_state == SOLVED_CUBE_LIST
 
 
-    def clockwise(self, face: int):
-        # For simplicity's sake, var names are treated as if every turn is U
-        
-        match face:
-            case 0: # GREEN
-                tmpF = WHITE
-                tmpR = ORANGE
-                tmpB = YELLOW
-                tmpL = RED
-            case 1: # RED
-                tmpF = WHITE
-                tmpR = GREEN
-                tmpB = YELLOW
-                tmpL = BLUE
-            case 2: # WHITE
-                tmpF = GREEN
-                tmpR = RED
-                tmpB = BLUE
-                tmpL = ORANGE
-            case 3: # ORANGE
-                tmpF = GREEN
-                tmpR = WHITE
-                tmpB = BLUE
-                tmpL = YELLOW
-            case 4: # BLUE
-                tmpF = WHITE
-                tmpR = RED
-                tmpB = YELLOW
-                tmpL = ORANGE
-            case 5: # YELLOW
-                tmpF = GREEN
-                tmpR = ORANGE
-                tmpB = BLUE
-                tmpL = RED
-            case default:
-                tmpF = -1
-                tmpR = -1
-                tmpB = -1
-                tmpL = -1
-
-        if tmpF == -1:
-            raise ValueError(f"Invalid face: {face}")
-
-
-        tmpF0 = self.cube_state[tmpF][0]
-        tmpF1 = self.cube_state[tmpF][1]
-        tmpF2 = self.cube_state[tmpF][2]
-
-        self.cube_state[tmpF][0] = self.cube_state[tmpR][0]
-        self.cube_state[tmpF][1] = self.cube_state[tmpR][1]
-        self.cube_state[tmpF][2] = self.cube_state[tmpR][2]
-
-        self.cube_state[tmpR][0] = self.cube_state[tmpB][0]
-        self.cube_state[tmpR][1] = self.cube_state[tmpB][1]
-        self.cube_state[tmpR][2] = self.cube_state[tmpB][2]
-        
-        self.cube_state[tmpB][0] = self.cube_state[tmpL][0]
-        self.cube_state[tmpB][1] = self.cube_state[tmpL][1]
-        self.cube_state[tmpB][2] = self.cube_state[tmpL][2]
-
-        self.cube_state[tmpL][0] = tmpF0
-        self.cube_state[tmpL][1] = tmpF1
-        self.cube_state[tmpL][2] = tmpF2
-        
+    def face_clockwise(self, face: int):
         self.cube_state[face] = [
             self.cube_state[face][6], self.cube_state[face][3], self.cube_state[face][0],
             self.cube_state[face][7], self.cube_state[face][4], self.cube_state[face][1],
             self.cube_state[face][8], self.cube_state[face][5], self.cube_state[face][2]
         ]
 
-    def counterclockwise(self, face: int):
-        # For simplicity's sake, var names are treated as if every turn is U
-        
-        match face:
-            case 0: # GREEN
-                tmpF = WHITE
-                tmpR = ORANGE
-                tmpB = YELLOW
-                tmpL = RED
-            case 1: # RED
-                tmpF = WHITE
-                tmpR = GREEN
-                tmpB = YELLOW
-                tmpL = BLUE
-            case 2: # WHITE
-                tmpF = GREEN
-                tmpR = RED
-                tmpB = BLUE
-                tmpL = ORANGE
-            case 3: # ORANGE
-                tmpF = GREEN
-                tmpR = WHITE
-                tmpB = BLUE
-                tmpL = YELLOW
-            case 4: # BLUE
-                tmpF = WHITE
-                tmpR = RED
-                tmpB = YELLOW
-                tmpL = ORANGE
-            case 5: # YELLOW
-                tmpF = GREEN
-                tmpR = ORANGE
-                tmpB = BLUE
-                tmpL = RED
-            case default:
-                tmpF = -1
-                tmpR = -1
-                tmpB = -1
-                tmpL = -1
-
-        if tmpF == -1:
-            raise ValueError(f"Invalid face: {face}")
-
-
-        tmpF0 = self.cube_state[tmpF][0]
-        tmpF1 = self.cube_state[tmpF][1]
-        tmpF2 = self.cube_state[tmpF][2]
-
-        self.cube_state[tmpF][0] = self.cube_state[tmpL][0]
-        self.cube_state[tmpF][1] = self.cube_state[tmpL][1]
-        self.cube_state[tmpF][2] = self.cube_state[tmpL][2]
-
-        self.cube_state[tmpL][0] = self.cube_state[tmpB][0]
-        self.cube_state[tmpL][1] = self.cube_state[tmpB][1]
-        self.cube_state[tmpL][2] = self.cube_state[tmpB][2]
-        
-        self.cube_state[tmpB][0] = self.cube_state[tmpR][0]
-        self.cube_state[tmpB][1] = self.cube_state[tmpR][1]
-        self.cube_state[tmpB][2] = self.cube_state[tmpR][2]
-
-        self.cube_state[tmpR][0] = tmpF0
-        self.cube_state[tmpR][1] = tmpF1
-        self.cube_state[tmpR][2] = tmpF2
-        
+    def face_counterclockwise(self, face: int):
         self.cube_state[face] = [
             self.cube_state[face][2], self.cube_state[face][5], self.cube_state[face][8],
             self.cube_state[face][1], self.cube_state[face][4], self.cube_state[face][7],
             self.cube_state[face][0], self.cube_state[face][3], self.cube_state[face][6]
         ]
+    
+    def u(self):
+        self.face_clockwise(U)
+
+        tmpW0 = self.cube_state[WHITE][0]
+        tmpW1 = self.cube_state[WHITE][1]
+        tmpW2 = self.cube_state[WHITE][2]
+
+        self.cube_state[WHITE][0] = self.cube_state[ORANGE][0]
+        self.cube_state[WHITE][1] = self.cube_state[ORANGE][1]
+        self.cube_state[WHITE][2] = self.cube_state[ORANGE][2]
+
+        self.cube_state[ORANGE][0] = self.cube_state[YELLOW][6]
+        self.cube_state[ORANGE][1] = self.cube_state[YELLOW][7]
+        self.cube_state[ORANGE][2] = self.cube_state[YELLOW][8]
+
+        self.cube_state[YELLOW][6] = self.cube_state[RED][0]
+        self.cube_state[YELLOW][7] = self.cube_state[RED][1]
+        self.cube_state[YELLOW][8] = self.cube_state[RED][2]
+
+        self.cube_state[RED][0] = tmpW0
+        self.cube_state[RED][1] = tmpW1
+        self.cube_state[RED][2] = tmpW2
+
+
+    def u_prime(self):
+        self.face_counterclockwise(U)
+
+        tmpW0 = self.cube_state[WHITE][0]
+        tmpW1 = self.cube_state[WHITE][1]
+        tmpW2 = self.cube_state[WHITE][2]
+
+        self.cube_state[WHITE][0] = self.cube_state[RED][0]
+        self.cube_state[WHITE][1] = self.cube_state[RED][1]
+        self.cube_state[WHITE][2] = self.cube_state[RED][2]
+
+        self.cube_state[RED][0] = self.cube_state[YELLOW][6]
+        self.cube_state[RED][1] = self.cube_state[YELLOW][7]
+        self.cube_state[RED][2] = self.cube_state[YELLOW][8]
+
+        self.cube_state[YELLOW][6] = self.cube_state[ORANGE][0]
+        self.cube_state[YELLOW][7] = self.cube_state[ORANGE][1]
+        self.cube_state[YELLOW][8] = self.cube_state[ORANGE][2]
+
+        self.cube_state[ORANGE][0] = tmpW0
+        self.cube_state[ORANGE][1] = tmpW1
+        self.cube_state[ORANGE][2] = tmpW2
+
+    def d(self):
+        self.face_clockwise(D)
+
+        tmpW6 = self.cube_state[WHITE][6]
+        tmpW7 = self.cube_state[WHITE][7]
+        tmpW8 = self.cube_state[WHITE][8]
+
+        self.cube_state[WHITE][6] = self.cube_state[RED][6]
+        self.cube_state[WHITE][7] = self.cube_state[RED][7]
+        self.cube_state[WHITE][8] = self.cube_state[RED][8]
+
+        self.cube_state[RED][6] = self.cube_state[YELLOW][0]
+        self.cube_state[RED][7] = self.cube_state[YELLOW][1]
+        self.cube_state[RED][8] = self.cube_state[YELLOW][2]
+
+        self.cube_state[YELLOW][0] = self.cube_state[ORANGE][6]
+        self.cube_state[YELLOW][1] = self.cube_state[ORANGE][7]
+        self.cube_state[YELLOW][2] = self.cube_state[ORANGE][8]
+
+        self.cube_state[ORANGE][6] = tmpW6
+        self.cube_state[ORANGE][7] = tmpW7
+        self.cube_state[ORANGE][8] = tmpW8
+
+    def d_prime(self):
+        self.face_counterclockwise(D)
+
+        tmpW6 = self.cube_state[WHITE][6]
+        tmpW7 = self.cube_state[WHITE][7]
+        tmpW8 = self.cube_state[WHITE][8]
+
+        self.cube_state[WHITE][6] = self.cube_state[ORANGE][6]
+        self.cube_state[WHITE][7] = self.cube_state[ORANGE][7]
+        self.cube_state[WHITE][8] = self.cube_state[ORANGE][8]
+
+        self.cube_state[ORANGE][6] = self.cube_state[YELLOW][0]
+        self.cube_state[ORANGE][7] = self.cube_state[YELLOW][1]
+        self.cube_state[ORANGE][8] = self.cube_state[YELLOW][2]
+
+        self.cube_state[YELLOW][0] = self.cube_state[RED][6]
+        self.cube_state[YELLOW][1] = self.cube_state[RED][7]
+        self.cube_state[YELLOW][2] = self.cube_state[RED][8]
+
+        self.cube_state[RED][6] = tmpW6
+        self.cube_state[RED][7] = tmpW7
+        self.cube_state[RED][8] = tmpW8
+
+    def r(self):
+        self.face_clockwise(R)
+
+        tmpG2 = self.cube_state[GREEN][2]
+        tmpG5 = self.cube_state[GREEN][5]
+        tmpG8 = self.cube_state[GREEN][8]
+
+        self.cube_state[GREEN][2] = self.cube_state[YELLOW][2]
+        self.cube_state[GREEN][5] = self.cube_state[YELLOW][5]
+        self.cube_state[GREEN][8] = self.cube_state[YELLOW][8]
+
+        self.cube_state[YELLOW][2] = self.cube_state[BLUE][8]
+        self.cube_state[YELLOW][5] = self.cube_state[BLUE][5]
+        self.cube_state[YELLOW][8] = self.cube_state[BLUE][2]
+
+        self.cube_state[BLUE][2] = self.cube_state[WHITE][2]
+        self.cube_state[BLUE][5] = self.cube_state[WHITE][5]
+        self.cube_state[BLUE][8] = self.cube_state[WHITE][8]
+
+        self.cube_state[WHITE][2] = tmpG2
+        self.cube_state[WHITE][5] = tmpG5
+        self.cube_state[WHITE][8] = tmpG8
+
+    def r_prime(self):
+        self.face_counterclockwise(R)
+
+        tmpG2 = self.cube_state[GREEN][2]
+        tmpG5 = self.cube_state[GREEN][5]
+        tmpG8 = self.cube_state[GREEN][8]
+
+        self.cube_state[GREEN][2] = self.cube_state[WHITE][2]
+        self.cube_state[GREEN][5] = self.cube_state[WHITE][5]
+        self.cube_state[GREEN][8] = self.cube_state[WHITE][8]
+
+        self.cube_state[WHITE][2] = self.cube_state[BLUE][2]
+        self.cube_state[WHITE][5] = self.cube_state[BLUE][5]
+        self.cube_state[WHITE][8] = self.cube_state[BLUE][8]
+
+        self.cube_state[BLUE][8] = self.cube_state[YELLOW][2]
+        self.cube_state[BLUE][5] = self.cube_state[YELLOW][5]
+        self.cube_state[BLUE][2] = self.cube_state[YELLOW][8]
+
+        self.cube_state[YELLOW][2] = tmpG2
+        self.cube_state[YELLOW][5] = tmpG5
+        self.cube_state[YELLOW][8] = tmpG8
+
+    def l(self):
+        self.face_clockwise(L)
+
+        tmpG0 = self.cube_state[GREEN][0]
+        tmpG3 = self.cube_state[GREEN][3]
+        tmpG6 = self.cube_state[GREEN][6]
+
+        self.cube_state[GREEN][0] = self.cube_state[WHITE][0]
+        self.cube_state[GREEN][3] = self.cube_state[WHITE][3]
+        self.cube_state[GREEN][6] = self.cube_state[WHITE][6]
+
+        self.cube_state[WHITE][0] = self.cube_state[BLUE][0]
+        self.cube_state[WHITE][3] = self.cube_state[BLUE][3]
+        self.cube_state[WHITE][6] = self.cube_state[BLUE][6]
+
+        self.cube_state[BLUE][0] = self.cube_state[YELLOW][0]
+        self.cube_state[BLUE][3] = self.cube_state[YELLOW][3]
+        self.cube_state[BLUE][6] = self.cube_state[YELLOW][6]
+
+        self.cube_state[YELLOW][0] = tmpG0
+        self.cube_state[YELLOW][3] = tmpG3
+        self.cube_state[YELLOW][6] = tmpG6
+
+    def l_prime(self):
+        self.face_counterclockwise(L)
+
+        tmpG0 = self.cube_state[GREEN][0]
+        tmpG3 = self.cube_state[GREEN][3]
+        tmpG6 = self.cube_state[GREEN][6]
+
+        self.cube_state[GREEN][0] = self.cube_state[YELLOW][0]
+        self.cube_state[GREEN][3] = self.cube_state[YELLOW][3]
+        self.cube_state[GREEN][6] = self.cube_state[YELLOW][6]
+
+        self.cube_state[YELLOW][0] = self.cube_state[BLUE][0]
+        self.cube_state[YELLOW][3] = self.cube_state[BLUE][3]
+        self.cube_state[YELLOW][6] = self.cube_state[BLUE][6]
+
+        self.cube_state[BLUE][0] = self.cube_state[WHITE][0]
+        self.cube_state[BLUE][3] = self.cube_state[WHITE][3]
+        self.cube_state[BLUE][6] = self.cube_state[WHITE][6]
+
+        self.cube_state[WHITE][0] = tmpG0
+        self.cube_state[WHITE][3] = tmpG3
+        self.cube_state[WHITE][6] = tmpG6
+        
+    def f(self):
+        self.face_clockwise(F)
+
+        tmpG6 = self.cube_state[GREEN][6]
+        tmpG7 = self.cube_state[GREEN][7]
+        tmpG8 = self.cube_state[GREEN][8]
+
+        self.cube_state[GREEN][6] = self.cube_state[RED][2]
+        self.cube_state[GREEN][7] = self.cube_state[RED][5]
+        self.cube_state[GREEN][8] = self.cube_state[RED][8]
+
+        self.cube_state[RED][2] = self.cube_state[BLUE][0]
+        self.cube_state[RED][5] = self.cube_state[BLUE][1]
+        self.cube_state[RED][8] = self.cube_state[BLUE][2]
+
+        self.cube_state[BLUE][0] = self.cube_state[ORANGE][6]
+        self.cube_state[BLUE][1] = self.cube_state[ORANGE][3]
+        self.cube_state[BLUE][2] = self.cube_state[ORANGE][0]
+
+        self.cube_state[ORANGE][6] = tmpG6
+        self.cube_state[ORANGE][3] = tmpG7
+        self.cube_state[ORANGE][0] = tmpG8
+
+    def f_prime(self):
+        self.face_counterclockwise(F)
+
+        tmpG6 = self.cube_state[GREEN][6]
+        tmpG7 = self.cube_state[GREEN][7]
+        tmpG8 = self.cube_state[GREEN][8]
+
+        self.cube_state[GREEN][6] = self.cube_state[ORANGE][6]
+        self.cube_state[GREEN][7] = self.cube_state[ORANGE][3]
+        self.cube_state[GREEN][8] = self.cube_state[ORANGE][0]
+
+        self.cube_state[ORANGE][6] = self.cube_state[BLUE][0]
+        self.cube_state[ORANGE][3] = self.cube_state[BLUE][1]
+        self.cube_state[ORANGE][0] = self.cube_state[BLUE][2]
+
+        self.cube_state[BLUE][0] = self.cube_state[RED][2]
+        self.cube_state[BLUE][1] = self.cube_state[RED][5]
+        self.cube_state[BLUE][2] = self.cube_state[RED][8]
+
+        self.cube_state[RED][2] = tmpG6
+        self.cube_state[RED][5] = tmpG7
+        self.cube_state[RED][8] = tmpG8
+
+    def b(self):
+        self.face_clockwise(B)
+
+        tmpB6 = self.cube_state[BLUE][6]
+        tmpB7 = self.cube_state[BLUE][7]
+        tmpB8 = self.cube_state[BLUE][8]
+
+        self.cube_state[BLUE][6] = self.cube_state[RED][0]
+        self.cube_state[BLUE][7] = self.cube_state[RED][3]
+        self.cube_state[BLUE][8] = self.cube_state[RED][6]
+
+        self.cube_state[RED][0] = self.cube_state[GREEN][0]
+        self.cube_state[RED][3] = self.cube_state[GREEN][1]
+        self.cube_state[RED][6] = self.cube_state[GREEN][2]
+
+        self.cube_state[GREEN][0] = self.cube_state[ORANGE][2]
+        self.cube_state[GREEN][1] = self.cube_state[ORANGE][5]
+        self.cube_state[GREEN][2] = self.cube_state[ORANGE][8]
+
+        self.cube_state[ORANGE][2] = tmpB6
+        self.cube_state[ORANGE][5] = tmpB7
+        self.cube_state[ORANGE][8] = tmpB8
+
+    def b_prime(self):
+        self.face_counterclockwise(B)
+
+        tmpB6 = self.cube_state[BLUE][6]
+        tmpB7 = self.cube_state[BLUE][7]
+        tmpB8 = self.cube_state[BLUE][8]
+
+        self.cube_state[BLUE][6] = self.cube_state[ORANGE][2]
+        self.cube_state[BLUE][7] = self.cube_state[ORANGE][5]
+        self.cube_state[BLUE][8] = self.cube_state[ORANGE][8]
+
+        self.cube_state[ORANGE][2] = self.cube_state[GREEN][0]
+        self.cube_state[ORANGE][5] = self.cube_state[GREEN][1]
+        self.cube_state[ORANGE][8] = self.cube_state[GREEN][2]
+
+        self.cube_state[GREEN][0] = self.cube_state[RED][0]
+        self.cube_state[GREEN][1] = self.cube_state[RED][3]
+        self.cube_state[GREEN][2] = self.cube_state[RED][6]
+
+        self.cube_state[RED][0] = tmpB6
+        self.cube_state[RED][3] = tmpB7
+        self.cube_state[RED][6] = tmpB8
+
+    def m(self):
+        self.l()
+        self.r_prime()
+
+    def m_prime(self):
+        self.l_prime()
+        self.r()
+
+    def e(self):
+        self.u_prime()
+        self.d()
+
+    def e_prime(self):
+        self.u()
+        self.d_prime()
+
+    def s(self):
+        self.f()
+        self.b_prime()
+
+    def s_prime(self):
+        self.f_prime()
+        self.b()
 
     def algorithm(self, algorithm: str):
         algo_list = algorithm.split()
@@ -190,64 +365,67 @@ class Cube:
         for rotation in algo_list:
             match rotation:
                 case "U":
-                    self.clockwise(U)
+                    self.u()
                 case "U'":
-                    self.counterclockwise(U)
+                    self.u_prime()
                 case "U2":
-                    self.clockwise(U)
-                    self.clockwise(U)
-                case "L":
-                    self.clockwise(L)
-                case "L'":
-                    self.counterclockwise(L)
-                case "L2":
-                    self.clockwise(L)
-                    self.clockwise(L)
-                case "F":
-                    self.clockwise(F)
-                case "F'":
-                    self.counterclockwise(F)
-                case "F2":
-                    self.clockwise(F)
-                    self.clockwise(F)
-                case "R":
-                    self.clockwise(R)
-                case "R'":
-                    self.counterclockwise(R)
-                case "R2":
-                    self.clockwise(R)
-                    self.clockwise(R)
+                    self.u()
+                    self.u()
                 case "D":
-                    self.clockwise(D)
+                    self.d()
                 case "D'":
-                    self.counterclockwise(D)
+                    self.d_prime()
                 case "D2":
-                    self.clockwise(D)
-                    self.clockwise(D)
+                    self.d()
+                    self.d()
+                case "L":
+                    self.l()
+                case "L'":
+                    self.l_prime()
+                case "L2":
+                    self.l()
+                    self.l()
+                case "F":
+                    self.f()
+                case "F'":
+                    self.f_prime()
+                case "F2":
+                    self.f()
+                    self.f()
+                case "R":
+                    self.r()
+                case "R'":
+                    self.r_prime()
+                case "R2":
+                    self.r()
+                    self.r()
                 case "B":
-                    self.clockwise(B)
+                    self.b()
                 case "B'":
-                    self.counterclockwise(B)
+                    self.b_prime()
                 case "B2":
-                    self.clockwise(B)
-                    self.clockwise(B)
+                    self.b()
+                    self.b()
                 case "M":
-                    self.clockwise(L)
-                    self.clockwise(L)
+                    self.m()
                 case "M'":
-                    self.clockwise(R)
-                    self.clockwise(R)
+                    self.m_prime()
+                case "M2":
+                    self.m()
+                    self.m()
                 case "E":
-                    self.clockwise(D)
-                    self.clockwise(D)
+                    self.e()
                 case "E'":
-                    self.clockwise(U)
-                    self.clockwise(U)
+                    self.e_prime()
+                case "E2":
+                    self.e()
+                    self.e()
                 case "S":
-                    self.clockwise(F)
-                    self.clockwise(F)
+                    self.s()
                 case "S'":
-                    self.clockwise(B)
-                    self.clockwise(B)
+                    self.s_prime()
+                case "S2":
+                    self.s()
+                    self.s()
                 case _:
                     raise ValueError(f"Unknown rotation: {rotation}")
