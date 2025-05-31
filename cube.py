@@ -375,7 +375,27 @@ class Cube:
         self.b()
 
     def solve(self):
-        self.cube_state = deepcopy(SOLVED_CUBE_LIST)
+        print("Solving cube...")
+        self.cube_state = [
+    ["G", "G", "G",
+     "G", "G", "G",
+     "G", "G", "G"],  # Green face
+    ["R", "R", "R",
+     "R", "R", "R",
+     "R", "R", "R"],  # Red face
+    ["W", "W", "W",
+     "W", "W", "W",
+     "W", "W", "W"],  # White face
+    ["O", "O", "O",
+     "O", "O", "O",
+     "O", "O", "O"],  # Orange face
+    ["B", "B", "B",
+     "B", "B", "B",
+     "B", "B", "B"],  # Blue face
+    ["Y", "Y", "Y",
+     "Y", "Y", "Y",
+     "Y", "Y", "Y"]   # Yellow face
+]
         self.solved = True
 
     def scramble(self):

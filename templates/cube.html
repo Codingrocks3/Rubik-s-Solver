@@ -246,6 +246,7 @@
 
         // Update the cube state on the frontend
         function updateCube(cubeState) {
+            console.log("Updating cube with:", cubeState);
             const squares = document.querySelectorAll(".cube .square");
             let idx = 0;
             for (const face of cubeState) {
@@ -286,6 +287,7 @@
         });
 
         document.getElementById("solve-btn").addEventListener("click", () => {
+            console.log("Solve button clicked");
             fetch("/_solve")
               .then(response => response.json())
               .then(data => updateCube(data.cube));

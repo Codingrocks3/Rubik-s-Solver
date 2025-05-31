@@ -24,6 +24,7 @@ def turn():
 @app.route("/_solve")
 def solve():
     cube.solve()
+    print("Returning:", cube.cube_state)
     return flask.jsonify({"cube": cube.cube_state})
 
 # Add scramble route
