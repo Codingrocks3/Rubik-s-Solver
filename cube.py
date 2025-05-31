@@ -9,6 +9,7 @@ Mason Holly
 Henry Fleming"""
 
 import random
+from copy import deepcopy
 
 # Order of faces in list: Green, Red, White, Orange, Blue, Yellow
 U = GREEN = 0
@@ -374,7 +375,7 @@ class Cube:
         self.b()
 
     def solve(self):
-        self.cube_state = SOLVED_CUBE_LIST
+        self.cube_state = deepcopy(SOLVED_CUBE_LIST)
         self.solved = True
 
     def scramble(self):

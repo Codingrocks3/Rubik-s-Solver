@@ -135,8 +135,8 @@
                     <button>R'</button>
                     <button>R2</button>
                 </fieldset>
-                <button>Scramble</button>
-                <button>Solve</button>
+                <button id="scramble-btn">Scramble</button>
+                <button id="solve-btn">Solve</button>
                 <div class="algorithm-input">
                     <input type="text" id="algorithm-box" placeholder="Algorithm..." />
                     <button id="submit-algo">Submit</button>
@@ -274,6 +274,19 @@
         document.getElementById("submit-algo").addEventListener("click", () => {
             const algo = document.getElementById("algorithm-box").value;
             fetch(`/_turn?algorithm=${encodeURIComponent(algo)}`)
+              .then(response => response.json())
+              .then(data => updateCube(data.cube));
+        });
+
+        // Handle scramble and solve buttons
+        document.getElementById("scramble-btn").addEventListener("click", () => {
+            fetch("/_scramble")
+              .then(response => response.json())
+              .then(data => updateCube(data.cube));
+        });
+
+        document.getElementById("solve-btn").addEventListener("click", () => {
+            fetch("/_solve")
               .then(response => response.json())
               .then(data => updateCube(data.cube));
         });
