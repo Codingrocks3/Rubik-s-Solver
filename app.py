@@ -19,5 +19,18 @@ def turn():
     cube.algorithm(algo)
     return flask.jsonify({"cube": cube.cube_state})
 
+
+# Add solve route
+@app.route("/_solve")
+def solve():
+    cube.solve()
+    return flask.jsonify({"cube": cube.cube_state})
+
+# Add scramble route
+@app.route("/_scramble")
+def scramble():
+    cube.scramble()
+    return flask.jsonify({"cube": cube.cube_state})
+
 if __name__ == "__main__":
     app.run()

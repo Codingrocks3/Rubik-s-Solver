@@ -8,6 +8,8 @@ Blake Ogilvie
 Mason Holly
 Henry Fleming"""
 
+import random
+
 # Order of faces in list: Green, Red, White, Orange, Blue, Yellow
 U = GREEN = 0
 L = RED = 1
@@ -36,6 +38,18 @@ SOLVED_CUBE_LIST = [
     ["Y", "Y", "Y",
      "Y", "Y", "Y",
      "Y", "Y", "Y"]   # Yellow face
+]
+
+POSSIBLE_MOVES = [
+    "U", "U'", "U2",
+    "D", "D'", "D2",
+    "L", "L'", "L2",
+    "R", "R'", "R2",
+    "F", "F'", "F2",
+    "B", "B'", "B2",
+    "M", "M'", "M2",
+    "E", "E'", "E2",
+    "S", "S'", "S2"
 ]
 
 class Cube:
@@ -359,6 +373,19 @@ class Cube:
         self.f_prime()
         self.b()
 
+    def solve(self):
+        self.cube_state = SOLVED_CUBE_LIST
+        self.solved = True
+
+    def scramble(self):
+        scramble = []
+
+        for i in range(40):
+            scramble.append(random.choice(POSSIBLE_MOVES))
+
+        algo = ' '.join(scramble)
+        self.algorithm(algo)
+
     def algorithm(self, algorithm: str):
         algo_list = algorithm.split()
 
@@ -429,3 +456,5 @@ class Cube:
                     self.s()
                 case _:
                     raise ValueError(f"Unknown rotation: {rotation}")
+                
+            self.solved = self.solved == SOLVED_CUBE_LIST
