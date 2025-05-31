@@ -164,7 +164,7 @@ class Solve:
     def solveCube(self, cubeState):
         self.getAlgorithmInput(cubeState)
         self.printCube(self.cube.cube_state)
-        if cubeState == SOLVED_CUBE_LIST:
+        if self.cube.solved:
             print("Cube is solved!")
             return cubeState
         else:
